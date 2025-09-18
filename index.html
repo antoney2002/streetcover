@@ -211,17 +211,48 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            background: linear-gradient(45deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1));
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-            clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+            background: linear-gradient(160deg, 
+                hsla(203, 92%, 60%, 0.7), /* soft-blueish */
+                hsla(337, 100%, 70%, 0.7), /* soft-pinkish */
+                hsla(145, 93%, 60%, 0.6)  /* soft-greenish */
+            );
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            clip-path: polygon(50% 0%, 100% 30%, 80% 100%, 20% 100%, 0% 30%); /* Forma cristallo principale */
             opacity: 0;
             animation: fly-crystal 1.2s ease-out forwards;
+            transform-origin: center center;
+        }
+
+        /* Aggiungo pseudo-elementi per simulare un grappolo di cristalli */
+        .crystal::before,
+        .crystal::after {
+            content: '';
+            position: absolute;
+            width: 60%;
+            height: 60%;
+            background: inherit; /* Usano lo stesso gradiente */
+            backdrop-filter: inherit;
+            -webkit-backdrop-filter: inherit;
+        }
+
+        .crystal::before {
+            top: 40%;
+            left: -20%;
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); /* Forma a diamante */
+            transform: rotate(-30deg);
+        }
+
+        .crystal::after {
+            top: 40%;
+            right: -20%;
+            clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%); /* Forma più piccola */
+            transform: rotate(25deg);
         }
 
         @keyframes fly-crystal {
             0% {
-                transform: translate(-50%, -50%) scale(0);
+                transform: translate(-50%, -50%) scale(0) rotate(0deg);
                 opacity: 1;
             }
             100% {
