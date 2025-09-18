@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreetCover - Liquid Style</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- RESET E STILI GLOBALI --- */
+        :root {
+            --background-color: #000000; /* Sfondo nero */
+            --text-color: #FFFFFF; /* Testo bianco */
+            --primary-red: #E50914;
+            /* Colori SOLO per il testo liquido */
+            --soft-blue: #64C2F8;
+            --soft-pink: #FF66A3;
+            --soft-green: #72F8B6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* --- SFONDO "LIQUID GLASS" SCURO --- */
+        .liquid-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+            filter: blur(120px);
+        }
+
+        .liquid-shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.6;
+        }
+
+        .bg-shape-1 {
+            width: 450px; height: 450px; background-color: var(--primary-red);
+            top: 5vh; left: 10vw; animation: move-liquid 22s infinite alternate;
+        }
+        .bg-shape-2 {
+            width: 550px; height: 550px; background-color: #222;
+            bottom: 10vh; right: 5vw; animation: move-liquid-2 28s infinite alternate-reverse;
+        }
+        .bg-shape-3 {
+            width: 350px; height: 350px; background-color: var(--text-color); opacity: 0.1;
+            top: 40vh; right: 35vw; animation: move-liquid 20s infinite alternate;
+        }
+
+        @keyframes move-liquid {
+            from { transform: translate(0, 0) rotate(0deg) scale(1); }
+            to { transform: translate(150px, 200px) rotate(180deg) scale(1.2); }
+        }
+        @keyframes move-liquid-2 {
+            from { transform: translate(0, 0) rotate(0deg) scale(1.2); }
+            to { transform: translate(-50px, -100px) rotate(-180deg) scale(1); }
+        }
+
+        /* --- ANIMAZIONE DI TRANSIZIONE --- */
+        .transition-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 9999; background-color: var(--background-color);
+            opacity: 1; visibility: visible; transition: opacity 0.8s ease-in-out, visibility 0.8s;
+            display: flex; justify-content: center; align-items: center; overflow: hidden;
+        }
+        .transition-overlay .liquid-background { filter: blur(80px); }
+        .transition-overlay.hidden { opacity: 0; visibility: hidden; }
+        main, header { opacity: 0; transition: opacity 0.6s ease-in-out 0.3s; }
+        body.loaded main, body.loaded header { opacity: 1; }
+
+        /* --- HEADER --- */
+        header {
+            position: absolute; width: 100%; padding: 25px 5%; display: flex;
+            justify-content: space-between; align-items: center; z-index: 100;
+        }
+        .logo {
+            font-size: 1.8em; font-weight: 900; text-decoration: none; cursor: pointer;
+            color: var(--text-color);
+        }
+        
+        /* --- MENU HAMBURGER "GLASS" --- */
+        .hamburger-container {
+            width: 50px; height: 50px; display: flex; justify-content: center; align-items: center;
+            cursor: pointer; z-index: 101; background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 50%;
+            transition: background-color 0.3s ease;
+        }
+        .hamburger-container:hover { background: rgba(255, 255, 255, 0.2); }
+        .hamburger-icon { width: 24px; height: 18px; display: flex; flex-direction: column; justify-content: space-between; }
+        .hamburger-icon span { width: 100%; height: 3px; background-color: var(--text-color); border-radius: 3px; transition: all 0.3s ease; }
+        .hamburger-container.active .hamburger-icon span:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
+        .hamburger-container.active .hamburger-icon span:nth-child(2) { opacity: 0; }
+        .hamburger-container.active .hamburger-icon span:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
+
+        /* --- MENU A TENDINA (OVERLAY) --- */
+        .nav-menu {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 10, 10, 0.7); backdrop-filter: blur(30px) saturate(180%);
+            -webkit-backdrop-filter: blur(30px) saturate(180%); z-index: 99;
+            display: flex; justify-content: center; align-items: center; flex-direction: column;
+            opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+        .nav-menu.active { opacity: 1; visibility: visible; }
+        .nav-menu a {
+            color: var(--text-color); font-size: 2.5rem; font-weight: 700;
+            margin: 20px 0; text-decoration: none; transition: color 0.3s;
+        }
+        .nav-menu a:hover { color: var(--primary-red); }
+        
+        /* --- SEZIONI PRINCIPALI --- */
+        main section { width: 100%; min-height: 100vh; padding: 120px 5% 50px; }
+        .home-section { display: flex; justify-content: center; align-items: center; }
+        .hidden { display: none !important; }
+
+        /* --- TESTO "LIQUID GLASS" CON GRADIENTE ANIMATO --- */
+        @keyframes animated-gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .liquid-glass-text {
+            background: linear-gradient( 45deg, var(--soft-blue), var(--soft-pink), var(--soft-green), var(--soft-blue) );
+            background-size: 400% 400%;
+            animation: animated-gradient 10s ease infinite;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            -webkit-text-stroke: 0.5px rgba(255,255,255,0.1);
+        }
+
+        /* --- HOMEPAGE --- */
+        .home-section { text-align: center; flex-direction: column; }
+        .hero-content h1 { font-size: clamp(2.5rem, 8vw, 5rem); font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }
+        .hero-content p { font-size: 1.2rem; max-width: 600px; margin: 20px auto 0; line-height: 1.6; font-weight: 400; }
+        
+        /* Pulsante effetto vetro con animazione al click */
+        .glass-button {
+            display: inline-block; margin-top: 40px; padding: 15px 40px; border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px; background: rgba(20, 20, 20, 0.3); backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%); color: var(--text-color); font-size: 1.1em;
+            font-weight: 700; text-decoration: none; transition: all 0.2s ease; cursor: pointer;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .glass-button:hover {
+            background: rgba(229, 9, 20, 0.8); border-color: rgba(229, 9, 20, 0); transform: translateY(-5px);
+            box-shadow: 0 0 30px rgba(229, 9, 20, 0.6);
+        }
+        .glass-button:active {
+            transform: translateY(-2px) scale(0.95); /* Animazione al click */
+            box-shadow: 0 0 15px rgba(229, 9, 20, 0.5);
+        }
+
+        /* --- PAGINA PRODOTTI --- */
+        .products-section h2 { text-align: center; font-size: clamp(2.5rem, 6vw, 3.5rem); font-weight: 900; text-transform: uppercase; margin-bottom: 60px; }
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; }
+        .product-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
+            backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 30px; overflow: hidden;
+            text-align: center; transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .product-card:hover { transform: translateY(-15px) scale(1.03); box-shadow: 0 0 40px rgba(229, 9, 20, 0.5); border-color: rgba(255, 255, 255, 0.4); }
+        .product-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .product-card h3 { font-size: 1.5em; margin-top: 20px; }
+        .product-card .price { font-size: 1.2em; font-weight: 700; margin: 10px 0; opacity: 0.9; }
+        .buy-button {
+            padding: 12px 30px; margin: 15px 0 25px 0; border: none; border-radius: 50px;
+            background-color: var(--primary-red); color: #fff; font-weight: 700; cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            display: inline-block; /* Aggiunto per corretto styling del link */
+            text-decoration: none; /* Aggiunto per rimuovere sottolineatura link */
+        }
+        .buy-button:hover { background-color: #c40812; transform: scale(1.05); }
+    </style>
+</head>
+<body>
+
+    <!-- Overlay di transizione -->
+    <div class="transition-overlay" id="transition-overlay">
+        <div class="liquid-background">
+            <div class="liquid-shape bg-shape-1"></div>
+            <div class="liquid-shape bg-shape-2"></div>
+            <div class="liquid-shape bg-shape-3"></div>
+        </div>
+    </div>
+
+    <!-- Sfondo animato -->
+    <div class="liquid-background">
+        <div class="liquid-shape bg-shape-1"></div>
+        <div class="liquid-shape bg-shape-2"></div>
+        <div class="liquid-shape bg-shape-3"></div>
+    </div>
+
+    <header>
+        <a class="logo">StreetCover</a>
+        <div class="hamburger-container" id="hamburger-container">
+            <div class="hamburger-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <nav class="nav-menu" id="nav-menu">
+        <a href="#home">Home</a>
+        <a href="#prodotti">Prodotti</a>
+    </nav>
+
+    <main>
+        <!-- SEZIONE 1: HOMEPAGE -->
+        <section class="home-section" id="home">
+            <div class="hero-content">
+                <h1 class="liquid-glass-text">IL TUO STILE, LA TUA STRADA</h1>
+                <p class="liquid-glass-text">Cover uniche per persone uniche. Esplora un design che rompe gli schemi e protegge ciò che conta.</p>
+                <a href="#" class="glass-button" data-target="prodotti">SCOPRI ORA</a>
+            </div>
+        </section>
+
+        <!-- SEZIONE 2: PRODOTTI (nascosta di default) -->
+        <section class="products-section hidden" id="prodotti">
+            <h2 class="liquid-glass-text">Le Nostre Cover</h2>
+            <div class="products-grid">
+                <!-- Prodotto 1: Rossa -->
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="https://i.postimg.cc/gjxZ9QRy/AJCOVER3.jpg" alt="Cover Rossa">
+                    </div>
+                    <h3>Rosso Fuoco</h3>
+                    <p class="price">14,99 €</p>
+                    <a href="https://buy.stripe.com/dR65ks0IBa0R384288" target="_blank" class="buy-button">Acquista Ora</a>
+                </div>
+
+                <!-- Prodotto 2: Nera -->
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="https://i.postimg.cc/vm87qPPh/AJCOVER2.jpg" alt="Cover Nera">
+                    </div>
+                    <h3>Nero Assoluto</h3>
+                    <p class="price">14,99 €</p>
+                    <a href="https://buy.stripe.com/3cs14c0IB6OFaAw8wz" target="_blank" class="buy-button">Acquista Ora</a>
+                </div>
+
+                <!-- Prodotto 3: Trasparente -->
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="https://i.postimg.cc/y6y5WGM6/AJCOVER.jpg" alt="Cover Trasparente">
+                    </div>
+                    <h3>Cristallo Puro</h3>
+                    <p class="price">14,99 €</p>
+                    <a href="https://buy.stripe.com/bJeeVd6sUgfkew5czG0Ny07" target="_blank" class="buy-button">Acquista Ora</a>
+                </div>
+
+                <!-- Prodotto 4: Bianca -->
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="https://i.postimg.cc/y6y5WGM6/AJCOVER.jpg" alt="Cover Bianca">
+                    </div>
+                    <h3>Bianco Ghiaccio</h3>
+                    <p class="price">14,99 €</p>
+                    <a href="https://buy.stripe.com/8wMbIQajbdd30ZW004" target="_blank" class="buy-button">Acquista Ora</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const hamburgerContainer = document.getElementById('hamburger-container');
+            const navMenu = document.getElementById('nav-menu');
+            const sections = document.querySelectorAll('main section');
+            const navLinks = document.querySelectorAll('.nav-menu a');
+            const scopriOraBtn = document.querySelector('.glass-button');
+            const logo = document.querySelector('.logo');
+            const transitionOverlay = document.getElementById('transition-overlay');
+
+            // --- GESTIONE TRANSIZIONE ---
+            function runTransition(callback) {
+                transitionOverlay.classList.remove('hidden');
+                setTimeout(() => {
+                    callback(); // Esegui il cambio pagina mentre l'overlay è visibile
+                    setTimeout(() => {
+                        transitionOverlay.classList.add('hidden');
+                    }, 200); // Breve ritardo per assicurare che il contenuto sia cambiato
+                }, 800); // Durata dell'animazione di fade-in dell'overlay
+            }
+            
+            // Animazione iniziale al caricamento della pagina
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    transitionOverlay.classList.add('hidden');
+                    document.body.classList.add('loaded'); // Mostra il contenuto
+                }, 500); // Ritardo iniziale
+            });
+
+            // --- GESTIONE NAVIGAZIONE ---
+            function showPage(pageId) {
+                sections.forEach(section => {
+                    section.id === pageId ? section.classList.remove('hidden') : section.classList.add('hidden');
+                });
+                window.scrollTo(0, 0);
+            }
+
+            hamburgerContainer.addEventListener('click', () => {
+                hamburgerContainer.classList.toggle('active');
+                navMenu.classList.toggle('active');
+            });
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = e.currentTarget.getAttribute('href').substring(1);
+                    runTransition(() => {
+                        showPage(targetId);
+                        hamburgerContainer.classList.remove('active');
+                        navMenu.classList.remove('active');
+                    });
+                });
+            });
+
+            scopriOraBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = scopriOraBtn.getAttribute('data-target');
+                runTransition(() => showPage(targetId));
+            });
+            
+            logo.addEventListener('click', () => {
+                runTransition(() => showPage('home'));
+            });
+
+            // Mostra la home all'inizio (ma nascosta dall'overlay)
+            showPage('home');
+        });
+    </script>
+</body>
+</html>
+
+
