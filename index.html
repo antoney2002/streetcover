@@ -194,6 +194,41 @@
             text-decoration: none; /* Aggiunto per rimuovere sottolineatura link */
         }
         .buy-button:hover { background-color: #c40812; transform: scale(1.05); }
+
+        /* --- TRANSIZIONE CRISTALLI --- */
+        .crystal-transition-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10000;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .crystal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1));
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+            opacity: 0;
+            animation: fly-crystal 1.2s ease-out forwards;
+        }
+
+        @keyframes fly-crystal {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: var(--crystal-end-transform) scale(1.5);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -343,8 +378,44 @@
 
             scopriOraBtn.addEventListener('click', (e) => {
                 e.preventDefault();
+
+                const crystalContainer = document.createElement('div');
+                crystalContainer.className = 'crystal-transition-container';
+                document.body.appendChild(crystalContainer);
+
+                const crystalCount = 30;
+                for (let i = 0; i < crystalCount; i++) {
+                    const crystal = document.createElement('div');
+                    crystal.className = 'crystal';
+
+                    // Randomizza dimensione e ritardo animazione
+                    const size = Math.random() * 40 + 10;
+                    crystal.style.width = `${size}px`;
+                    crystal.style.height = `${size}px`;
+                    crystal.style.animationDelay = `${Math.random() * 0.3}s`;
+
+                    // Calcola una destinazione casuale e la imposta come variabile CSS
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = Math.max(window.innerWidth, window.innerHeight) * 0.8;
+                    const endX = Math.cos(angle) * distance;
+                    const endY = Math.sin(angle) * distance;
+                    const endRotate = Math.random() * 720 - 360; // rotazione tra -360 e 360
+                    
+                    const endTransform = `translate(calc(-50% + ${endX}px), calc(-50% + ${endY}px)) rotate(${endRotate}deg)`;
+                    crystal.style.setProperty('--crystal-end-transform', endTransform);
+
+                    crystalContainer.appendChild(crystal);
+                }
+
                 const targetId = scopriOraBtn.getAttribute('data-target');
-                runTransition(() => showPage(targetId));
+                // Attendi che l'animazione sia ben visibile prima di iniziare la transizione di pagina
+                setTimeout(() => {
+                    runTransition(() => showPage(targetId));
+                    // Rimuovi gli elementi dal DOM dopo che la transizione è completa
+                    setTimeout(() => {
+                        document.body.removeChild(crystalContainer);
+                    }, 1000); 
+                }, 500); // Inizia la transizione di pagina un po' prima per un effetto più fluido
             });
             
             logo.addEventListener('click', () => {
@@ -357,5 +428,4 @@
     </script>
 </body>
 </html>
-
 
