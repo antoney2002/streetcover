@@ -250,6 +250,25 @@
             margin-bottom: 60px;
         }
 
+        /* --- OTTIMIZZAZIONE MOBILE --- */
+        @media (max-width: 768px) {
+            .nav-menu a {
+                font-size: 2rem; /* Riduci dimensione font nel menu */
+            }
+
+            .hero-text h1 {
+                font-size: clamp(2.2rem, 10vw, 3rem); /* Adatta il titolo */
+            }
+            .hero-text p {
+                font-size: 1rem;
+            }
+
+            #model-container {
+                height: 400px; /* Riduci l'altezza del contenitore 3D */
+                margin-top: -30px; /* Riduci il margine negativo */
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -457,6 +476,7 @@
 
             const loader = new GLTFLoader();
             let modelRight, modelLeft;
+            let isMobile = window.innerWidth <= 768; // Verifica la dimensione iniziale
 
             // Carica primo modello (destra)
             loader.load(
@@ -466,8 +486,8 @@
                     const box = new THREE.Box3().setFromObject(modelRight);
                     const center = box.getCenter(new THREE.Vector3());
                     modelRight.position.sub(center); 
-                    modelRight.position.x = 16;
-                    modelRight.scale.set(1.8, 1.8, 1.8);
+                    modelRight.position.x = isMobile ? 9 : 16;
+                    modelRight.scale.set(isMobile ? 1.6 : 1.8, isMobile ? 1.6 : 1.8, isMobile ? 1.6 : 1.8);
                     modelRight.rotation.y = Math.PI * 0.7;
                     scene.add(modelRight);
                 },
@@ -483,8 +503,8 @@
                     const box = new THREE.Box3().setFromObject(modelLeft);
                     const center = box.getCenter(new THREE.Vector3());
                     modelLeft.position.sub(center);
-                    modelLeft.position.x = -16;
-                    modelLeft.scale.set(1.8, 1.8, 1.8);
+                    modelLeft.position.x = isMobile ? -9 : -16;
+                    modelLeft.scale.set(isMobile ? 1.6 : 1.8, isMobile ? 1.6 : 1.8, isMobile ? 1.6 : 1.8);
                     modelLeft.rotation.y = -Math.PI * 0.7;
                     scene.add(modelLeft);
                 },
@@ -569,6 +589,17 @@
             animate();
 
             window.addEventListener('resize', () => {
+                isMobile = window.innerWidth <= 768; // Aggiorna al resize
+
+                if(modelRight) {
+                    modelRight.position.x = isMobile ? 9 : 16;
+                    modelRight.scale.set(isMobile ? 1.6 : 1.8, isMobile ? 1.6 : 1.8, isMobile ? 1.6 : 1.8);
+                }
+                if(modelLeft) {
+                    modelLeft.position.x = isMobile ? -9 : -16;
+                    modelLeft.scale.set(isMobile ? 1.6 : 1.8, isMobile ? 1.6 : 1.8, isMobile ? 1.6 : 1.8);
+                }
+                
                 if(container.clientWidth > 0 && container.clientHeight > 0){
                     camera.aspect = container.clientWidth / container.clientHeight;
                     camera.updateProjectionMatrix();
@@ -579,3 +610,4 @@
     </script>
 </body>
 </html>
+
