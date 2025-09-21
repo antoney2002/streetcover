@@ -222,7 +222,21 @@
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
         .product-card:hover { transform: translateY(-15px) scale(1.03); box-shadow: 0 0 40px rgba(229, 9, 20, 0.5); border-color: rgba(255, 255, 255, 0.4); }
-        .product-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .product-image {
+            position: relative;
+            width: 100%;
+            padding-top: 150%; /* Mantieni l'aspect ratio per le immagini e il video */
+            overflow: hidden;
+        }
+        .product-image img, .product-image video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border: none;
+        }
         .product-card h3 { font-size: 1.5em; margin-top: 20px; }
         .product-card .price { font-size: 1.2em; font-weight: 700; margin: 10px 0; opacity: 0.9; }
         .buy-button {
@@ -326,37 +340,37 @@
                 <!-- Prodotto 1: Rossa -->
                 <div class="product-card">
                     <div class="product-image">
-                        <img src="https://i.postimg.cc/gjxZ9QRy/AJCOVER3.jpg" alt="Cover Rossa">
+                        <video src="https://github.com/antoney2002/streetcover/raw/refs/heads/main/video%20rossa0001-0250.webm" autoplay loop muted playsinline></video>
                     </div>
                     <h3>Rosso Fuoco</h3>
                     <p class="price">14,99 €</p>
-                    <a href="https://buy.stripe.com/dR65ks0IBa0R384288" target="_blank" class="buy-button">Acquista Ora</a>
+                    <a href="https://buy.stripe.com/7sY28rg3u7IO2Nn9nu0Ny09" target="_blank" class="buy-button">Acquista Ora</a>
                 </div>
 
                 <!-- Prodotto 2: Nera -->
                 <div class="product-card">
                     <div class="product-image">
-                        <img src="https://i.postimg.cc/vm87qPPh/AJCOVER2.jpg" alt="Cover Nera">
+                        <video src="https://github.com/antoney2002/streetcover/raw/refs/heads/main/video%20nera0001-0250.webm" autoplay loop muted playsinline></video>
                     </div>
                     <h3>Nero Assoluto</h3>
                     <p class="price">14,99 €</p>
-                    <a href="https://buy.stripe.com/3cs14c0IB6OFaAw8wz" target="_blank" class="buy-button">Acquista Ora</a>
+                    <a href="https://buy.stripe.com/aFa5kDdVm1kqbjTary0Ny08" target="_blank" class="buy-button">Acquista Ora</a>
                 </div>
 
                 <!-- Prodotto 3: Trasparente -->
                 <div class="product-card">
                     <div class="product-image">
-                        <img src="https://i.postimg.cc/y6y5WGM6/AJCOVER.jpg" alt="Cover Trasparente">
+                        <video src="https://github.com/antoney2002/streetcover/raw/refs/heads/main/video%20trasparente0001-0250.webm" autoplay loop muted playsinline></video>
                     </div>
                     <h3>Cristallo Puro</h3>
                     <p class="price">14,99 €</p>
-                    <a href="https://buy.stripe.com/bJeeVd6sUgfkew5czG0Ny07" target="_blank" class="buy-button">Acquista Ora</a>
+                    <a href="https://buy.stripe.com/00w8wP18A9QW0Ff2Z60Ny0a" target="_blank" class="buy-button">Acquista Ora</a>
                 </div>
 
                 <!-- Prodotto 4: Bianca -->
                 <div class="product-card">
                     <div class="product-image">
-                        <img src="https://i.postimg.cc/y6y5WGM6/AJCOVER.jpg" alt="Cover Bianca">
+                        <video src="https://github.com/antoney2002/streetcover/raw/refs/heads/main/video%20bianca0001-0250.webm" autoplay loop muted playsinline></video>
                     </div>
                     <h3>Bianco Ghiaccio</h3>
                     <p class="price">14,99 €</p>
@@ -481,7 +495,8 @@
             const modelUrls = [
                 'https://cdn.jsdelivr.net/gh/antoney2002/streetcover/covwe.glb',
                 'https://cdn.jsdelivr.net/gh/antoney2002/streetcover/cov3we.glb',
-                'https://cdn.jsdelivr.net/gh/antoney2002/streetcover/covne.glb'
+                'https://cdn.jsdelivr.net/gh/antoney2002/streetcover/covne.glb',
+                'https://cdn.jsdelivr.net/gh/antoney2002/streetcover/covtra.glb'
             ];
 
             function prepareModel(obj) {
@@ -624,10 +639,8 @@
             });
         }
     </script>
+    <script src="https://player.vimeo.com/api/player.js"></script>
 </body>
 </html>
-
-
-
 
 
