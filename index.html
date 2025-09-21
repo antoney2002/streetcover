@@ -202,17 +202,17 @@
         
         /* --- CONTENITORE MODELLO 3D --- */
         #model-container {
-            width: 100%;
-            height: 600px; /* Aumentata l'altezza verso il basso */
+            width: 120%;
+            height: 700px; 
             z-index: 5;
             cursor: grab;
-            margin-top: 20px; /* Spostato sotto il pulsante */
+            margin-top: -10px; /* Riposizionato più in alto */
             position: relative;
         }
         #model-container:active { cursor: grabbing; }
 
         /* --- PAGINA PRODOTTI --- */
-        .products-section h2 { text-align: center; font-size: clamp(2.5rem, 6vw, 3.5rem); font-weight: 900; text-transform: uppercase; margin-bottom: 60px; }
+        .products-section h2 { text-align: center; font-size: clamp(2.5rem, 6vw, 3.5rem); font-weight: 900; text-transform: uppercase; margin-bottom: 50px; margin-top: 50px; }
         .products-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; }
         .product-card {
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
@@ -220,13 +220,15 @@
             border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 30px; overflow: hidden;
             text-align: center; transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            will-change: transform; 
         }
         .product-card:hover { transform: translateY(-15px) scale(1.03); box-shadow: 0 0 40px rgba(229, 9, 20, 0.5); border-color: rgba(255, 255, 255, 0.4); }
         .product-image {
             position: relative;
             width: 100%;
-            padding-top: 150%; /* Mantieni l'aspect ratio per le immagini e il video */
+            padding-top: 150%; 
             overflow: hidden;
+            cursor: pointer;
         }
         .product-image img, .product-image video {
             position: absolute;
@@ -275,7 +277,7 @@
                 font-size: 1rem;
             }
             #model-container {
-                height: 500px; /* Aumentata l'altezza anche su mobile */
+                height: 500px; 
                 margin-top: 10px; 
             }
         }
@@ -340,7 +342,7 @@
                 <!-- Prodotto 1: Rossa -->
                 <div class="product-card">
                     <div class="product-image">
-                        <video src="https://github.com/antoney2002/streetcover/raw/refs/heads/main/video%20rossa0001-0250.webm" autoplay loop muted playsinline></video>
+                        <video src="https://github.com/antoney2002/streetcover/raw/refs/heads/main/video%20rossa0001-0250.webm" muted playsinline></video>
                     </div>
                     <h3>Rosso Fuoco</h3>
                     <p class="price">14,99 €</p>
@@ -350,7 +352,7 @@
                 <!-- Prodotto 2: Nera -->
                 <div class="product-card">
                     <div class="product-image">
-                        <video src="https://github.com/antoney2002/streetcover/raw/refs/heads/main/video%20nera0001-0250.webm" autoplay loop muted playsinline></video>
+                        <video src="https://github.com/antoney2002/streetcover/raw/refs/heads/main/video%20nera0001-0250.webm" muted playsinline></video>
                     </div>
                     <h3>Nero Assoluto</h3>
                     <p class="price">14,99 €</p>
@@ -360,7 +362,7 @@
                 <!-- Prodotto 3: Trasparente -->
                 <div class="product-card">
                     <div class="product-image">
-                        <video src="https://github.com/antoney2002/streetcover/raw/refs/heads/main/video%20trasparente0001-0250.webm" autoplay loop muted playsinline></video>
+                        <video src="https://github.com/antoney2002/streetcover/raw/refs/heads/main/video%20trasparente0001-0250.webm" muted playsinline></video>
                     </div>
                     <h3>Cristallo Puro</h3>
                     <p class="price">14,99 €</p>
@@ -370,7 +372,7 @@
                 <!-- Prodotto 4: Bianca -->
                 <div class="product-card">
                     <div class="product-image">
-                        <video src="https://github.com/antoney2002/streetcover/raw/refs/heads/main/video%20bianca0001-0250.webm" autoplay loop muted playsinline></video>
+                        <video src="https://github.com/antoney2002/streetcover/raw/refs/heads/main/video%20bianca0001-0250.webm" muted playsinline></video>
                     </div>
                     <h3>Bianco Ghiaccio</h3>
                     <p class="price">14,99 €</p>
@@ -452,19 +454,64 @@
                 runTransition(() => showPage('home'));
             });
 
-            // Event listener per il click sul modello 3D
             if(modelContainer) {
                 modelContainer.addEventListener('navigateToProducts', () => {
                     runTransition(() => showPage('prodotti'));
                 });
             }
+            
+            const productCards = document.querySelectorAll('.product-card');
+            productCards.forEach(card => {
+                const video = card.querySelector('video');
+                if (!video) return;
+
+                const resetVideo = () => {
+                    video.pause();
+                    video.currentTime = video.duration / 2 || 0;
+                };
+
+                video.addEventListener('loadedmetadata', resetVideo);
+                
+                const playVideo = () => {
+                    if (video.paused) {
+                        video.currentTime = 0;
+                        video.play();
+                    }
+                };
+                
+                // Su Desktop, usa hover
+                if (window.matchMedia("(hover: hover)").matches) {
+                    card.addEventListener('mouseenter', playVideo);
+                    card.addEventListener('mouseleave', resetVideo);
+                }
+
+                // Su Mobile (e anche Desktop), usa click/tap
+                card.addEventListener('click', () => {
+                     if (video.paused) {
+                        // Metti in pausa tutti gli altri video prima di far partire questo
+                        productCards.forEach(otherCard => {
+                            const otherVideo = otherCard.querySelector('video');
+                            if (otherVideo && otherVideo !== video) {
+                                otherVideo.pause();
+                                otherVideo.currentTime = otherVideo.duration / 2 || 0;
+                            }
+                        });
+                        playVideo();
+                    } else {
+                        resetVideo();
+                    }
+                });
+
+                 video.addEventListener('ended', resetVideo);
+            });
+
 
             showPage('home');
         });
     </script>
     
     <!-- Script per il modello 3D con Three.js -->
-    <script type="module">
+     <script type="module">
         import * as THREE from 'three';
         import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
@@ -496,7 +543,6 @@
                 'https://cdn.jsdelivr.net/gh/antoney2002/streetcover/covwe.glb',
                 'https://cdn.jsdelivr.net/gh/antoney2002/streetcover/cov3we.glb',
                 'https://cdn.jsdelivr.net/gh/antoney2002/streetcover/covne.glb',
-                'https://cdn.jsdelivr.net/gh/antoney2002/streetcover/covtra.glb'
             ];
 
             function prepareModel(obj) {
@@ -642,5 +688,3 @@
     <script src="https://player.vimeo.com/api/player.js"></script>
 </body>
 </html>
-
-
